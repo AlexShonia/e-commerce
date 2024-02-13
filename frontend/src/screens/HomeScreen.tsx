@@ -1,26 +1,40 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "react-bootstrap";
 import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { listProducts } from "../actions/productActions";
-
+import { useQuery } from "react-query";
+import { axiosClient } from "../axiosConfig";
+import { setProducts } from "../features/getProductsSlice";
 function HomeScreen() {
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useQuery("products", async () => {
+    const response = await axiosClient.get("/api/products/");
+    return response.data;
+  });
+
+  console.log(error);
+
   const dispatch = useDispatch();
 
-  const productList = useSelector((state) => state.productList);
-  const { error, loading, products } = productList;
-
   useEffect(() => {
-    dispatch(listProducts());
-  }, [dispatch]);
+    if (products) {
+      dispatch(setProducts(products));
+    }
+  }, [dispatch, products]);
+
+  const ye = useSelector((state) => state.products);
+  console.log(ye);
 
   return (
     <div>
       <h1>Latest Products</h1>
 
-      {loading ? (
+      {isLoading ? (
         <Loader />
       ) : error ? (
         <Message variant="danger">{error}</Message>

@@ -1,30 +1,54 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
-import { Row, Col, Image, ListGroup, Button, Card } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
+import {
+  Row,
+  Col,
+  Image,
+  ListGroup,
+  Button,
+  Card,
+  Form,
+} from "react-bootstrap";
+
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { listProductDetails } from "../actions/productActions";
+import { useQuery } from "react-query";
+import { axiosClient } from "../axiosConfig";
+
+import { setProductDetails } from "../features/getProductDetailsSlice";
 
 function ProductScreen() {
+  const [qty, setQty] = useState(1);
   const { id } = useParams();
+
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery("productDetails", async () => {
+    const response = await axiosClient.get(`/api/products/${id}`);
+    return response.data;
+  });
+
   const dispatch = useDispatch();
 
-  const productDetails = useSelector((state) => state.productDetails);
-  const { error, loading, product } = productDetails;
-
   useEffect(() => {
-    dispatch(listProductDetails(id));
+    if (product) {
+      dispatch(setProductDetails(product));
+    }
   }, [dispatch, id]);
+
+  const details = useSelector((state) => state.productDetails);
+  console.log(details);
 
   return (
     <div>
       <Link to="/" className="btn btn-light my-3">
         Go Back
       </Link>
-      {loading ? (
+      {isLoading ? (
         <Loader />
       ) : error ? (
         <Message variant="danger">{error}</Message>
@@ -65,6 +89,7 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+
                 <ListGroup.Item>
                   <Row>
                     <Col>Status: </Col>
@@ -75,7 +100,6 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-
                 <ListGroup.Item className="d-grid">
                   <Button
                     variant="primary"
