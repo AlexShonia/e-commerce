@@ -1,5 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { act } from "react-dom/test-utils";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = { product: { reviews: [] } };
 

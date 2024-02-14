@@ -17,8 +17,6 @@ function HomeScreen() {
     return response.data;
   });
 
-  console.log(error);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,9 +24,6 @@ function HomeScreen() {
       dispatch(setProducts(products));
     }
   }, [dispatch, products]);
-
-  const ye = useSelector((state) => state.products);
-  console.log(ye);
 
   return (
     <div>

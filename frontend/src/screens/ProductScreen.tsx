@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   Row,
   Col,
@@ -22,6 +22,7 @@ import { setProductDetails } from "../features/getProductDetailsSlice";
 function ProductScreen() {
   const [qty, setQty] = useState(1);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: product,
@@ -40,8 +41,9 @@ function ProductScreen() {
     }
   }, [dispatch, id]);
 
-  const details = useSelector((state) => state.productDetails);
-  console.log(details);
+  const addToCartHandler = () => {
+    navigate(`/cart/${id}?qty=${qty}`);
+  };
 
   return (
     <div>
@@ -100,8 +102,29 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+                {product && product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Qty</Col>
+                      <Col xs="auto" className="my-1">
+                        <Form.Select
+                          size="sm"
+                          value={qty}
+                          onChange={(e) => setQty(e.target.value)}
+                        >
+                          {[...Array(product.countInStock).keys()].map((i) => (
+                            <option value={i + 1} key={i + 1}>
+                              {i + 1}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
                 <ListGroup.Item className="d-grid">
                   <Button
+                    onClick={addToCartHandler}
                     variant="primary"
                     disabled={product?.countInStock == 0}
                     type="button"
