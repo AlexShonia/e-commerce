@@ -44,7 +44,8 @@ function ProductScreen() {
   const addToCartHandler = () => {
     navigate(`/cart/${id}?qty=${qty}`);
   };
-
+  console.log(qty);
+  
   return (
     <div>
       <Link to="/" className="btn btn-light my-3">
@@ -110,7 +111,7 @@ function ProductScreen() {
                         <Form.Select
                           size="sm"
                           value={qty}
-                          onChange={(e) => setQty(e.target.value)}
+                          onChange={(e) => setQty(Number(e.target.value))}
                         >
                           {[...Array(product.countInStock).keys()].map((i) => (
                             <option value={i + 1} key={i + 1}>

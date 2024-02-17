@@ -1,9 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { cartAddItem, cartRemoveItem } from "../features/cartSlice";
-import { useParams } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Message from "../components/Message";
+import { axiosClient } from "../axiosConfig";
+import { useQuery } from "react-query";
 
 import {
   Row,
@@ -20,68 +22,119 @@ function CartScreen() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const qty = searchParams.get("qty");
+  const navigate = useNavigate();
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery("productDetails", async () => {
+    if (id) {
+      const response = await axiosClient.get(`/api/products/${id}`);
+      return response.data;
+    }
+  });
 
-  let cartItems = useSelector((state) => state.cart.cart);
-  let products = useSelector((state) => state.products.productsList);
-
-  let updatedCartItems;
-  let includes = false;
   useEffect(() => {
-    let updatedCartItems = JSON.parse(JSON.stringify(cartItems));
-    for (let i = 0; i < updatedCartItems.length; i++) {
-      if (id == updatedCartItems[i].id) {
-        updatedCartItems[i].qty = qty;
-        dispatch(cartAddItem(updatedCartItems));
-        includes = true;
-        break;
-      }
+    if (product && qty) {
+      const productWithQty = { ...product, qty: qty };
+      dispatch(cartAddItem(productWithQty));
     }
-    if (!includes) {
-      updatedCartItems = [...cartItems, { id: id, qty: qty }];
-      dispatch(cartAddItem(updatedCartItems));
-    }
-  }, [id, qty]);
+  }, [dispatch, id, qty]);
 
-  function getItemById(id) {
-    return products.find((item) => item._id === id);
+  const cart = useSelector((state) => state.cart);
+  const { cartItems } = cart;
+
+  function changeQty(item, quantity, idx) {
+    const smth = { ...item, qty: quantity, _id: idx };
+
+    dispatch(cartAddItem(smth));
   }
 
-  function removeFromCart(idx) {
-    updatedCartItems = [...cartItems];
+  const removeFromCartHandler = (idx) => {
+    dispatch(cartRemoveItem(idx));
+  };
 
-    for (let i = 0; i < updatedCartItems.length; i++) {
-      if (idx == updatedCartItems[i].id) {
-        console.log("mhm");
-
-        updatedCartItems.splice(i, 1);
-        dispatch(cartAddItem(updatedCartItems));
-      }
-    }
-  }
+  const checkoutHandler = () => {
+    navigate(`/login?redirect=shipping`);
+  };
 
   return (
-    <>
-      {cartItems.map((i) => {
-        const item = getItemById(parseInt(i.id));
-        const imageURL = item ? item.image : "";
-        const name = item ? item.name : "";
-
-        return (
-          <Row key={i.id}>
-            <Col>
-              <Image src={imageURL} fluid /> {/* Use the imageURL as src */}
-            </Col>
-            <Col>{name}</Col>
-            <Col>quantity: {i.qty}</Col>
-            <Col>
-              <button onClick={() => removeFromCart(parseInt(i.id))}>
-                remove
-              </button>
-            </Col>
-          </Row>
-        );
-      })}
-    </>
+    <Row>
+      <Col md={8}>
+        <h1>Shopping Cart</h1>
+        {cartItems.length === 0 ? (
+          <Message variant="info">
+            Your cart is empty <Link to="/">Go Back</Link>
+          </Message>
+        ) : (
+          <ListGroup variant="flush">
+            {cartItems.map((item) => (
+              <ListGroup.Item key={item.id}>
+                <Row>
+                  <Col md={2}>
+                    <Image src={item.image} alt={item.name} fluid rounded />
+                  </Col>
+                  <Col md={3}>
+                    <Link to={`/product/${item.id}`}>{item.name}</Link>
+                  </Col>
+                  <Col md={2}>${item.price}</Col>
+                  <Col md={3}>
+                    <Form.Select
+                      size="sm"
+                      value={item.qty}
+                      onChange={(e) =>
+                        changeQty(item, Number(e.target.value), item.id)
+                      }
+                    >
+                      {[...Array(item.countInStock).keys()].map((i) => (
+                        <option value={i + 1} key={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col>
+                    <Button
+                      type="button"
+                      variant="light"
+                      onClick={() => removeFromCartHandler(item.id)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </Button>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
+      </Col>
+      <Col md={4}>
+        <Card>
+          <ListGroup variant="flush">
+            <ListGroup.Item>
+              <h2>
+                Subtotal({cartItems.reduce((acc, item) => acc + item.qty, 0)})
+                Items
+              </h2>
+              $
+              {cartItems
+                .reduce((acc, item) => acc + item.qty * item.price, 0)
+                .toFixed(2)}
+            </ListGroup.Item>
+            <ListGroup.Item className="d-grid">
+              <Button
+                type="button"
+                variant="primary"
+                disabled={cartItems.length === 0}
+                onClick={checkoutHandler}
+              >
+                Proceed To Checkout
+              </Button>
+            </ListGroup.Item>
+          </ListGroup>
+        </Card>
+      </Col>
+    </Row>
   );
 }
 
