@@ -1,12 +1,7 @@
 import React from "react";
 
-interface RatingProps {
-  value: number | undefined;
-  text: string;
-  color: string;
-}
 
-function Rating({ value, text, color }: RatingProps) {
+function Rating({ value, text, color }) {
   const renderedStars = [];
 
   if (value !== undefined) {
