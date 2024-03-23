@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSearchParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Message from "../components/Message";
+import Loader from "../components/Loader";
 import { axiosClient } from "../axiosConfig";
 import { useQuery } from "react-query";
 
@@ -62,7 +63,11 @@ function CartScreen() {
     <Row>
       <Col md={8}>
         <h1>Shopping Cart</h1>
-        {cartItems.length === 0 ? (
+        {isLoading ? (
+          <Loader />
+        ) : error ? (
+          <Message variant="danger">{error}</Message>
+        ) : cartItems.length === 0 ? (
           <Message variant="info">
             Your cart is empty <Link to="/">Go Back</Link>
           </Message>
