@@ -4,20 +4,23 @@ import { Button, Form, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { axiosClient } from "../axiosConfig";
-import { Login } from "../features/authSlice";
+import { Register } from "../features/authSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 function LoginScreen() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [searchParams] = useSearchParams();
   const redirect = searchParams.has("redirect")
     ? searchParams.get("redirect")
     : "/";
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const config = {
     headers: {
@@ -29,9 +32,10 @@ function LoginScreen() {
   const mutation = useMutation(
     async () => {
       const response = await axiosClient.post(
-        "/api/users/login/",
+        "/api/users/register/",
         {
-          username: email,
+          name: name,
+          email: email,
           password: password,
         },
         config
@@ -40,8 +44,8 @@ function LoginScreen() {
     },
     {
       onSuccess: (data) => {
-        console.log("Login successful", data);
-        dispatch(Login(data));
+        console.log("Register successful", data);
+        dispatch(Register(data));
       },
       onError: (error) => {
         console.log("Login error", error.response.data.detail);
@@ -52,23 +56,37 @@ function LoginScreen() {
 
   function submitHandler(e) {
     e.preventDefault();
-    mutation.mutate();
+    if (password != confirmPassword) {
+      setMessage("Passwords do not match");
+    } else {
+      mutation.mutate();
+    }
   }
 
   useEffect(() => {
     if (userInfo) {
-      navigate(redirect);
+      navigate("/");
     }
   }, [mutation]);
 
   return (
     <FormContainer>
-      <h1>Sign In</h1>
+      <h1>Register</h1>
       {error && (
         <Message variant="danger">{error.response.data.detail}</Message>
       )}
       {mutation.isLoading && <Loader />}
       <Form onSubmit={submitHandler}>
+        <Form.Group controlId="name">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            required
+            type="name"
+            placeholder="Enter Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
         <Form.Group controlId="email">
           <Form.Label>Email Address</Form.Label>
           <Form.Control
@@ -89,13 +107,24 @@ function LoginScreen() {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-        <Button type="submit">Sign In</Button>
+        <Form.Group controlId="passwordConfirm">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            required
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+        {message ? <Message variant="danger">{message}</Message> : ""}
+        <Button type="submit">Register</Button>
       </Form>
       <Row className="py-3">
         <Col>
-          New Customer?{" "}
-          <Link to={redirect ? `/register?redirect=${redirect}` : "/register"}>
-            Register
+          Already Have an Account?{" "}
+          <Link to={redirect ? `/login?redirect=${redirect}` : "/login"}>
+            Sign In
           </Link>
         </Col>
       </Row>
