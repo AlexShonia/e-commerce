@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { setUserDetails } from "../features/userDetailsSlice";
+import { Login } from "../features/authSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { axiosClient } from "../axiosConfig";
@@ -37,12 +38,40 @@ function ProfileScreen() {
 				dispatch(setUserDetails(data));
 			},
 			onError: (error) => {
-				console.log(config);
 				console.log("Login error", error.response.data.detail);
 			},
 		}
 	);
-    
+
+	const updateProfileMutation = useMutation(
+		async () => {
+			const response = await axiosClient.put(
+				"/api/users/profile/update/",
+				{
+					name: name,
+					email: email,
+					password: password,
+				},
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				dispatch(Login(data));
+				dispatch(setUserDetails(data));
+			},
+			onError: (error) => {
+				console.log("Login error", error.response.data.detail);
+			},
+		}
+	);
+
 	useEffect(() => {
 		if (!userInfo) {
 			navigate("/");
@@ -61,7 +90,7 @@ function ProfileScreen() {
 		if (password != confirmPassword) {
 			setMessage("Passwords do not match");
 		} else {
-			console.log("updating user");
+			updateProfileMutation.mutate();
 		}
 	}
 	const { error } = getProfileMutation;
