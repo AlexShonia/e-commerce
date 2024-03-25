@@ -59,7 +59,7 @@ def updateUserProfile(request):
     serializer = UserSerializerWithToken(user, many=False)
 
     data = request.data
-    
+
     user.first_name = data["name"]
     user.email = data["email"]
     user.username = data["email"]

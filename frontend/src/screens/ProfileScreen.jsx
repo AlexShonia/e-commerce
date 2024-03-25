@@ -90,6 +90,7 @@ function ProfileScreen() {
 		if (password != confirmPassword) {
 			setMessage("Passwords do not match");
 		} else {
+            setMessage("");
 			updateProfileMutation.mutate();
 		}
 	}

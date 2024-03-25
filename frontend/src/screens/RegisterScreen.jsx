@@ -44,7 +44,6 @@ function LoginScreen() {
     },
     {
       onSuccess: (data) => {
-        console.log("Register successful", data);
         dispatch(Register(data));
       },
       onError: (error) => {
@@ -118,7 +117,7 @@ function LoginScreen() {
           ></Form.Control>
         </Form.Group>
         {message ? <Message variant="danger">{message}</Message> : ""}
-        <Button type="submit">Register</Button>
+        <Button type="submit" className="my-3">Register</Button>
       </Form>
       <Row className="py-3">
         <Col>
