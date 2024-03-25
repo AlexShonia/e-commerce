@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setShippingAddress } from "../features/cartSlice";
 import { axiosClient } from "../axiosConfig";
 import FormContainer from "../components/FormContainer";
+import CheckoutSteps from "../components/CheckoutSteps";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
+
 function ShippingScreen() {
 	const shippingAddress = useSelector((state) => state.cart.shippingAddress);
 	const [address, setAddress] = useState(shippingAddress.address);
@@ -31,6 +33,7 @@ function ShippingScreen() {
 
 	return (
 		<FormContainer>
+            <CheckoutSteps step1 step2 />
 			<h1>Shipping</h1>
 			<Form onSubmit={submitHandler}>
 				<Form.Group controlId="address">
