@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = { product: { reviews: [] } };
 
 export const productDetailsSlice = createSlice({
-  name: "product",
+  name: "productDetails",
   initialState,
   reducers: {
     setProductDetails: (state, action) => {
