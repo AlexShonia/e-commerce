@@ -44,7 +44,6 @@ function ProductScreen() {
   const addToCartHandler = () => {
     navigate(`/cart/${id}?qty=${qty}`);
   };
-  console.log(qty);
   
   return (
     <div>
@@ -127,7 +126,7 @@ function ProductScreen() {
                   <Button
                     onClick={addToCartHandler}
                     variant="primary"
-                    disabled={product?.countInStock == 0}
+                    disabled={product?.countInStock <= 0}
                     type="button"
                   >
                     Add to Cart

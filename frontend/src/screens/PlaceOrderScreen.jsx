@@ -6,6 +6,8 @@ import { axiosClient } from "../axiosConfig";
 import Message from "../components/Message";
 import CheckoutSteps from "../components/CheckoutSteps";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { createOrder, orderReset } from "../features/orderSlice";
+import { cartReset } from "../features/cartSlice";
 
 function PlaceOrderScreen() {
 	const cart = useSelector((state) => state.cart);
@@ -25,7 +27,46 @@ function PlaceOrderScreen() {
 		Number(editedCart.taxPrice)
 	).toFixed(2);
 
+	const navigate = useNavigate();
+	const userInfo = useSelector((state) => state.userLogin.userInfo);
+	const dispatch = useDispatch();
+	const mutation = useMutation(
+		async () => {
+			const response = await axiosClient.post(
+				"/api/orders/add/",
+				{
+					orderItems: cart.cartItems,
+					shippingAddress: cart.shippingAddress,
+					paymentMethod: cart.paymentMethod,
+					itemsPrice: editedCart.itemsPrice,
+					shippingPrice: editedCart.shippingPrice,
+					taxPrice: editedCart.taxPrice,
+					totalPrice: editedCart.totalPrice,
+				},
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				dispatch(createOrder(data));
+				dispatch(orderReset());
+				dispatch(cartReset());
+				navigate(`order/${data._id}`);
+			},
+			onError: (error) => {
+				console.log("Login error", error.response.data.detail);
+			},
+		}
+	);
+	const { error } = mutation;
 	function placeOrder() {
+		mutation.mutate();
 		console.log("placeOrder");
 	}
 	return (
@@ -122,6 +163,13 @@ function PlaceOrderScreen() {
 									<Col>Total: </Col>
 									<Col>${editedCart.totalPrice}</Col>
 								</Row>
+							</ListGroup.Item>
+							<ListGroup.Item>
+								{error && (
+									<Message variant="danger">
+										{error.response.data.detail}
+									</Message>
+								)}
 							</ListGroup.Item>
 							<ListGroup.Item className="d-grid">
 								<Button
