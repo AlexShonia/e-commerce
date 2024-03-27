@@ -14,7 +14,7 @@ const store = configureStore({
     cart: cartSlice,
     userLogin: authSlice,
     userDetails: userDetailsSlice,
-    orderCreate: orderSlice,
+    order: orderSlice,
   },
 });
 

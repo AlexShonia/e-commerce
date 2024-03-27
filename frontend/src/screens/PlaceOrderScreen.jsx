@@ -57,7 +57,7 @@ function PlaceOrderScreen() {
 				dispatch(createOrder(data));
 				dispatch(orderReset());
 				dispatch(cartReset());
-				navigate(`order/${data._id}`);
+				navigate(`/order/${data._id}`);
 			},
 			onError: (error) => {
 				console.log("Login error", error.response.data.detail);
@@ -79,7 +79,7 @@ function PlaceOrderScreen() {
 							<h2>Shipping</h2>
 							<p>
 								<strong>Shipping: </strong>
-								{cart.shippingAddress.address},
+								{cart.shippingAddress.address},{" "}
 								{cart.shippingAddress.city},{" "}
 								{cart.shippingAddress.postalCode},{" "}
 								{cart.shippingAddress.country}

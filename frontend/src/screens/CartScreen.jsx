@@ -17,7 +17,6 @@ import {
   Form,
   Card,
 } from "react-bootstrap";
-
 function CartScreen() {
   const dispatch = useDispatch();
   const { id } = useParams();

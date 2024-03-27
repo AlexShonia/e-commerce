@@ -4,7 +4,7 @@ import { Login } from "../features/authSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { axiosClient } from "../axiosConfig";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -23,7 +23,8 @@ function ProfileScreen() {
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const user = useSelector((state) => state.userDetails.user);
 
-	const getProfileMutation = useMutation(
+	const { error, isLoading } = useQuery(
+		"profile",
 		async () => {
 			const response = await axiosClient.get(`/api/users/profile/`, {
 				headers: {
@@ -75,13 +76,9 @@ function ProfileScreen() {
 	useEffect(() => {
 		if (!userInfo) {
 			navigate("/");
-		} else {
-			if (!user || !user.name) {
-				getProfileMutation.mutate();
-			} else {
-				setName(user.name);
-				setEmail(user.email);
-			}
+		} else if (user) {
+			setName(user.name);
+			setEmail(user.email);
 		}
 	}, [user]);
 
@@ -90,11 +87,11 @@ function ProfileScreen() {
 		if (password != confirmPassword) {
 			setMessage("Passwords do not match");
 		} else {
-            setMessage("");
+			setMessage("");
 			updateProfileMutation.mutate();
 		}
 	}
-	const { error } = getProfileMutation;
+
 	return (
 		<Row>
 			<Col md={3}>
@@ -105,7 +102,7 @@ function ProfileScreen() {
 						{error.response.data.detail}
 					</Message>
 				)}
-				{getProfileMutation.isLoading && <Loader />}
+				{isLoading && <Loader />}
 				<Form onSubmit={submitHandler}>
 					<Form.Group controlId="name">
 						<Form.Label>Username</Form.Label>
