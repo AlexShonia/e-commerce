@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useMutation } from "react-query";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { axiosClient } from "../axiosConfig";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
@@ -10,12 +11,11 @@ import { getOrderDetails } from "../features/orderSlice";
 
 function OrderScreen() {
 	const dispatch = useDispatch();
-
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const { id } = useParams();
 	const [order, setOrder] = useState();
 
-	const { isLoading, error } = useQuery(
+	const { isLoading, error, refetch } = useQuery(
 		"productDetails",
 		async () => {
 			const response = await axiosClient.get(`/api/orders/${id}/`, {
@@ -37,6 +37,51 @@ function OrderScreen() {
 			},
 		}
 	);
+
+	const payOrder = useMutation(
+		async () => {
+			const response = await axiosClient.put(
+				`/api/orders/${id}/pay/`,
+				{},
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				refetch();
+			},
+		}
+	);
+	const { isLoading: loadingPay, isSuccess } = payOrder;
+
+	function onCreateOrder(data, actions) {
+		return actions.order.create({
+			purchase_units: [
+				{
+					amount: {
+						value: order.totalPrice,
+					},
+				},
+			],
+		});
+	}
+	function onApproveOrder(data, actions) {
+		return actions.order
+			.capture()
+			.then((details) => {
+				payOrder.mutate();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
 	return (
 		<>
 			{isLoading ? (
@@ -174,13 +219,47 @@ function OrderScreen() {
 											<Col>${order.totalPrice}</Col>
 										</Row>
 									</ListGroup.Item>
-									<ListGroup.Item>
-										{error && (
+									{error && (
+										<ListGroup.Item>
 											<Message variant="danger">
 												{error.response.data.detail}
 											</Message>
-										)}
-									</ListGroup.Item>
+										</ListGroup.Item>
+									)}
+									{!order.isPaid && (
+										<ListGroup.Item>
+											<PayPalScriptProvider
+												options={{
+													clientId:
+														"ATnw-Lq2GXW48MU2SGG2bJD6_S0LcATzZJI4CzShqpMP_SiTdiUbOXFLfxE0CvPObqvMoHN6SMbwSGx6",
+												}}
+											>
+												<PayPalButtons
+													createOrder={(
+														data,
+														actions
+													) =>
+														onCreateOrder(
+															data,
+															actions
+														)
+													}
+													onApprove={(
+														data,
+														actions
+													) =>
+														onApproveOrder(
+															data,
+															actions
+														)
+													}
+													onError={(error) => {
+														console.log(error);
+													}}
+												/>
+											</PayPalScriptProvider>
+										</ListGroup.Item>
+									)}
 								</ListGroup>
 							</Card>
 						</Col>
