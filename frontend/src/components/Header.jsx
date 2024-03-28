@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Nav, NavDropdown, Navbar } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { Login, Logout } from "../features/authSlice";
+import { Login, Logout, resetUserList } from "../features/authSlice";
 import { setUserDetails } from "../features/userDetailsSlice";
 import { resetMyOrders } from "../features/orderSlice";
 
@@ -13,6 +13,7 @@ function Header() {
 	function logoutHandler() {
 		// TODO: remove rest from Redux whatever makes sense
 		dispatch(setUserDetails(null));
+		dispatch(resetUserList());
 		dispatch(Logout());
 		dispatch(resetMyOrders());
 	}
@@ -64,6 +65,25 @@ function Header() {
 										</Nav.Link>
 									</LinkContainer>
 								</>
+							)}
+							{userInfo && userInfo.isAdmin && (
+								<NavDropdown title="Admin" id="adminmenu">
+									<LinkContainer to="/admin/userlist">
+										<NavDropdown.Item>
+											Users
+										</NavDropdown.Item>
+									</LinkContainer>
+									<LinkContainer to="/admin/productlist">
+										<NavDropdown.Item>
+											Products
+										</NavDropdown.Item>
+									</LinkContainer>
+									<LinkContainer to="/admin/orderlist">
+										<NavDropdown.Item>
+											Orders
+										</NavDropdown.Item>
+									</LinkContainer>
+								</NavDropdown>
 							)}
 						</Nav>
 					</Navbar.Collapse>

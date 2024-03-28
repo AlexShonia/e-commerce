@@ -28,7 +28,7 @@ function ProfileScreen() {
 	const { error, isLoading } = useQuery(
 		"profile",
 		async () => {
-			const response = await axiosClient.get(`/api/users/profile/`, {
+			const response = await axiosClient.get('/api/users/profile/', {
 				headers: {
 					"Content-type": "application/json",
 					Authorization: `Bearer ${userInfo.token}`,

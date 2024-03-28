@@ -6,6 +6,7 @@ const userInfoFromLocalStorage = localStorage.getItem("userInfo")
 
 const initialState = {
   userInfo: userInfoFromLocalStorage,
+  userList: [],
 };
 
 export const authSlice = createSlice({
@@ -24,9 +25,16 @@ export const authSlice = createSlice({
       state.userInfo = action.payload;
       localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
     },
+    getUserList: (state, action) => {
+      state.userList = action.payload;
+    },
+    resetUserList: (state, action) => {
+      state.userList = [];
+    },
   },
 });
 
-export const { Login, Logout, Register } = authSlice.actions;
+export const { Login, Logout, Register, getUserList, resetUserList } =
+  authSlice.actions;
 
 export default authSlice.reducer;
