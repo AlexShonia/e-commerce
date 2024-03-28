@@ -4,43 +4,42 @@ import { Button, Table, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { axiosClient } from "../axiosConfig";
-import { getUserList } from "../features/authSlice";
+import { setProducts } from "../features/getProductsSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { LinkContainer } from "react-router-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-function UserListScreen() {
+function ProductListScreen() {
 	const dispatch = useDispatch();
-	const userList = useSelector((state) => state.userLogin.userList);
+	const productsList = useSelector((state) => state.products.productsList);
 	const navigate = useNavigate();
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
+	const [idToDelete, setIdToDelete] = useState();
 	const { error, isLoading, refetch } = useQuery(
-		"userList",
+		"proudctList",
 		async () => {
-			const response = await axiosClient.get("/api/users/", {
+			const response = await axiosClient.get("/api/products/", {
 				headers: {
 					"Content-type": "application/json",
-					Authorization: `Bearer ${userInfo.token}`,
 				},
 			});
 			return response.data;
 		},
 		{
 			onSuccess: (data) => {
-				dispatch(getUserList(data));
+				dispatch(setProducts(data));
 			},
 			onError: (error) => {
 				// TODO: find out if get request is sent even if non auth user is redirected
-				console.log("error getting users: ", error);
+				console.log("error getting products: ", error);
 			},
 		}
 	);
-	const [idToDelete, setIdToDelete] = useState();
 
 	const mutation = useMutation(
 		async () => {
 			const response = await axiosClient.delete(
-				`/api/users/delete/${idToDelete}/`,
+				`/api/products/delete/${idToDelete}/`,
 				{
 					headers: {
 						"Content-type": "application/json",
@@ -73,14 +72,32 @@ function UserListScreen() {
 	}, [userInfo, idToDelete]);
 
 	function deleteHandler(id) {
-		if (window.confirm("Are you sure you want to delete this user?")) {
+		if (window.confirm("Are you sure you want to delete this product?")) {
 			setIdToDelete(id);
 		}
+	}
+	function createProductHandler(product) {
+		console.log("create");
 	}
 
 	return (
 		<>
-			<h2>Users</h2>
+			<Row className="align-items-center">
+				<Col>
+					<h1>Products</h1>
+				</Col>
+				<Col className="text-end">
+					<Button className="my-3" onClick={createProductHandler}>
+						<i className="fas fa-plus"></i> Create Product
+					</Button>
+				</Col>
+			</Row>
+			{mutation.isLoading && <Loader />}
+			{mutation.error && (
+				<Message variant="danger">
+					{mutation.error.response.data.detail}
+				</Message>
+			)}
 			{isLoading ? (
 				<Loader />
 			) : error ? (
@@ -91,33 +108,23 @@ function UserListScreen() {
 						<tr>
 							<th>ID</th>
 							<th>Name</th>
-							<th>Email</th>
-							<th>Admin</th>
+							<th>Price</th>
+							<th>Category</th>
+							<th>Brand</th>
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						{userList.map((user) => (
-							<tr key={user._id}>
-								<td>{user._id}</td>
-								<td>{user.name}</td>
-								<td>{user.email}</td>
-								<td>
-									{user.isAdmin ? (
-										<i
-											className="fas fa-check"
-											style={{ color: "green" }}
-										></i>
-									) : (
-										<i
-											className="fas fa-xmark"
-											style={{ color: "red" }}
-										></i>
-									)}
-								</td>
+						{productsList.map((product) => (
+							<tr key={product._id}>
+								<td>{product._id}</td>
+								<td>{product.name}</td>
+								<td>${product.price}</td>
+								<td>{product.category}</td>
+								<td>{product.brand}</td>
 								<td className="text-end">
 									<LinkContainer
-										to={`/admin/user/${user._id}/edit`}
+										to={`/admin/product/${product._id}/edit`}
 									>
 										<Button
 											variant="dark"
@@ -129,7 +136,9 @@ function UserListScreen() {
 									<Button
 										variant="danger"
 										className="btn-sm mx-3"
-										onClick={() => deleteHandler(user._id)}
+										onClick={() =>
+											deleteHandler(product._id)
+										}
 									>
 										<i className="fas fa-trash"></i>
 									</Button>
@@ -143,4 +152,4 @@ function UserListScreen() {
 	);
 }
 
-export default UserListScreen;
+export default ProductListScreen;
