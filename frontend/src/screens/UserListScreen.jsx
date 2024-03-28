@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useMutation } from "react-query";
 import { Button, Table, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -35,15 +35,49 @@ function UserListScreen() {
 			},
 		}
 	);
+	const [idToDelete, setIdToDelete] = useState();
+
+	const mutation = useMutation(
+		async () => {
+			const response = await axiosClient.delete(
+				`/api/users/delete/${idToDelete}/`,
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				console.log("User delted succesfully", data);
+				setIdToDelete(null);
+				refetch();
+			},
+			onError: (error) => {
+				console.log("user deletion error", error);
+			},
+		}
+	);
+	const { error: deleteError } = mutation;
+
 	useEffect(() => {
 		if (!userInfo || !userInfo.isAdmin) {
 			navigate("/login");
 		}
-	}, [userInfo]);
+		if (idToDelete) {
+			mutation.mutate();
+		}
+	}, [userInfo, idToDelete]);
 
 	function deleteHandler(id) {
-		console.log(id);
+		if (window.confirm("Are you sure you want to delete this user?")) {
+			setIdToDelete(id);
+		}
 	}
+
 	return (
 		<>
 			<h2>Users</h2>
@@ -76,7 +110,7 @@ function UserListScreen() {
 										></i>
 									) : (
 										<i
-											class="fas fa-xmark"
+											className="fas fa-xmark"
 											style={{ color: "red" }}
 										></i>
 									)}
