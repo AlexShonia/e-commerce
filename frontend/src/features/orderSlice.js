@@ -1,6 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {order: {}, orderDetails: {}};
+const myOrdersFromStorage = localStorage.getItem("myOrders")
+  ? JSON.parse(localStorage.getItem("myOrders"))
+  : {};
+
+const initialState = {
+  order: {},
+  orderDetails: {},
+  myOrders: myOrdersFromStorage,
+};
 export const orderSlice = createSlice({
   name: "order",
   initialState,
@@ -14,8 +22,22 @@ export const orderSlice = createSlice({
     getOrderDetails: (state, action) => {
       state.orderDetails = action.payload;
     },
+    getMyOrders: (state, action) => {
+      state.myOrders = action.payload;
+      localStorage.setItem("myOrders", JSON.stringify(state.myOrders));
+    },
+    resetMyOrders: (state) => {
+      state.myOrders = {};
+      localStorage.removeItem("myOrders");
+    },
   },
 });
 
-export const { createOrder, orderReset, getOrderDetails } = orderSlice.actions;
+export const {
+  createOrder,
+  orderReset,
+  getOrderDetails,
+  getMyOrders,
+  resetMyOrders,
+} = orderSlice.actions;
 export default orderSlice.reducer;

@@ -112,17 +112,20 @@ function OrderScreen() {
 										{order.shippingAddress.city},{" "}
 										{order.shippingAddress.postalCode},{" "}
 										{order.shippingAddress.country}
-										{order.isDelivered ? (
-											<Message variant="success">
-												Delivered on:{" "}
-												{order.deliveredAt}
-											</Message>
-										) : (
-											<Message variant="warning">
-												Not Delivered
-											</Message>
-										)}
 									</p>
+									{order.isDelivered ? (
+										<Message variant="success">
+											Delivered on:{" "}
+											{order.deliveredAt?.substring(
+												0,
+												10
+											)}
+										</Message>
+									) : (
+										<Message variant="warning">
+											Not Delivered
+										</Message>
+									)}
 								</ListGroup.Item>
 								<ListGroup.Item>
 									<h2>Payment Method</h2>
@@ -132,7 +135,8 @@ function OrderScreen() {
 									</p>
 									{order.isPaid ? (
 										<Message variant="success">
-											Paid on: {order.paidAt}
+											Paid on:{" "}
+											{order.paidAt?.substring(0, 10)}
 										</Message>
 									) : (
 										<Message variant="warning">

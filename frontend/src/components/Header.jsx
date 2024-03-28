@@ -4,14 +4,17 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Login, Logout } from "../features/authSlice";
 import { setUserDetails } from "../features/userDetailsSlice";
+import { resetMyOrders } from "../features/orderSlice";
 
 function Header() {
 	const { userInfo } = useSelector((state) => state.userLogin);
 	const dispatch = useDispatch();
 
 	function logoutHandler() {
+		// TODO: remove rest from Redux whatever makes sense
 		dispatch(setUserDetails(null));
 		dispatch(Logout());
+		dispatch(resetMyOrders());
 	}
 
 	return (
