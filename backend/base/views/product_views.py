@@ -14,9 +14,9 @@ from base.serializers import ProductSerializer
 def getProducts(request):
     query = request.query_params.get("keyword")
     
-    if query == 'null':
+    if query == 'null' or query == None:
         query = ''
-
+    
     products = Product.objects.filter(name__icontains=query)
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
