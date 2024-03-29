@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation } from "react-query";
-import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
+import {
+	Button,
+	Row,
+	Col,
+	ListGroup,
+	Image,
+	Card,
+	Form,
+} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { axiosClient } from "../axiosConfig";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams,useNavigate, useSearchParams, Link } from "react-router-dom";
 import { getOrderDetails } from "../features/orderSlice";
 
 function OrderScreen() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const { id } = useParams();
 	const [order, setOrder] = useState();
@@ -60,6 +69,28 @@ function OrderScreen() {
 	);
 	const { isLoading: loadingPay, isSuccess } = payOrder;
 
+	const markAsDelivered = useMutation(
+		async () => {
+			const response = await axiosClient.put(
+				`/api/orders/${id}/deliver/`,
+				{},
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				refetch();
+			},
+		}
+	);
+	const { isLoading: deliverLoading } = markAsDelivered;
+
 	function onCreateOrder(data, actions) {
 		return actions.order.create({
 			purchase_units: [
@@ -71,6 +102,7 @@ function OrderScreen() {
 			],
 		});
 	}
+
 	function onApproveOrder(data, actions) {
 		return actions.order
 			.capture()
@@ -82,6 +114,15 @@ function OrderScreen() {
 			});
 	}
 
+	function deliverHandler() {
+		markAsDelivered.mutate();
+	}
+
+	useEffect(() => {
+		if (!userInfo) {
+			navigate("/login");
+		}
+	}, [userInfo]);
 	return (
 		<>
 			{isLoading ? (
@@ -269,6 +310,20 @@ function OrderScreen() {
 											</PayPalScriptProvider>
 										</ListGroup.Item>
 									)}
+									{deliverLoading && <Loader />}
+									{userInfo &&
+										userInfo.isAdmin &&
+										order.isPaid &&
+										!order.isDelivered && (
+											<ListGroup.Item className="d-grid">
+												<Button
+													type="button"
+													onClick={deliverHandler}
+												>
+													Mark as Delivered
+												</Button>
+											</ListGroup.Item>
+										)}
 								</ListGroup>
 							</Card>
 						</Col>
