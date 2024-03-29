@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Login, Logout, resetUserList } from "../features/authSlice";
 import { setUserDetails } from "../features/userDetailsSlice";
 import { resetMyOrders } from "../features/orderSlice";
-
+import SearchBox from "./SearchBox";
 function Header() {
 	const { userInfo } = useSelector((state) => state.userLogin);
 	const dispatch = useDispatch();
@@ -33,6 +33,7 @@ function Header() {
 
 					<Navbar.Toggle aria-controls="basic-navbar-nav" />
 					<Navbar.Collapse id="basic-navbar-nav">
+						<SearchBox />
 						<Nav className="mr-auto">
 							{" "}
 							{/* classname was me-auto before*/}
