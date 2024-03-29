@@ -57,7 +57,7 @@ function ProductScreen() {
       ) : (
         <Row>
           <Col md={6}>
-            <Image src={product?.image} alt={product?.name} fluid />
+            <Image src={axiosClient.defaults.baseURL.slice(0, -1) + product.image} alt={product?.name} fluid />
           </Col>
 
           <Col md={3}>

@@ -51,7 +51,7 @@ function ProductListScreen() {
 		},
 		{
 			onSuccess: (data) => {
-				console.log("User delted succesfully", data);
+				console.log("User deleted succesfully", data);
 				setIdToDelete(null);
 				refetch();
 			},
@@ -76,7 +76,33 @@ function ProductListScreen() {
 			setIdToDelete(id);
 		}
 	}
+	const createProductMutation = useMutation(
+		async () => {
+			const response = await axiosClient.post(
+				"/api/products/create/",
+				{},
+				{
+					headers: {
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				}
+			);
+			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				navigate(`/admin/product/${data._id}/edit`);
+				refetch();
+			},
+			onError: (error) => {
+				console.log("Product Creation error", error);
+			},
+		}
+	);
+
 	function createProductHandler(product) {
+		createProductMutation.mutate();
 		console.log("create");
 	}
 
@@ -96,6 +122,12 @@ function ProductListScreen() {
 			{mutation.error && (
 				<Message variant="danger">
 					{mutation.error.response.data.detail}
+				</Message>
+			)}
+			{createProductMutation.isLoading && <Loader />}
+			{createProductMutation.error && (
+				<Message variant="danger">
+					{createProductMutation.error.response.data.detail}
 				</Message>
 			)}
 			{isLoading ? (

@@ -159,6 +159,10 @@ function OrderScreen() {
 															<Col md={2}>
 																<Image
 																	src={
+																		axiosClient.defaults.baseURL.slice(
+																			0,
+																			-1
+																		) +
 																		item.image
 																	}
 																	alt={
@@ -238,6 +242,7 @@ function OrderScreen() {
 														"ATnw-Lq2GXW48MU2SGG2bJD6_S0LcATzZJI4CzShqpMP_SiTdiUbOXFLfxE0CvPObqvMoHN6SMbwSGx6",
 												}}
 											>
+												{/* TODO: add a a spinner while paypal button is loading */}
 												<PayPalButtons
 													createOrder={(
 														data,

@@ -105,7 +105,12 @@ function PlaceOrderScreen() {
 											<Row>
 												<Col md={2}>
 													<Image
-														src={item.image}
+														src={
+															axiosClient.defaults.baseURL.slice(
+																0,
+																-1
+															) + item.image
+														}
 														alt={item.name}
 														fluid
 														rounded
