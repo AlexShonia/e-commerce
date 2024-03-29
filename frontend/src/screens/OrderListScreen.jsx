@@ -42,7 +42,6 @@ function OrderListScreen() {
 		}
 	}, [userInfo]);
 
-
 	return (
 		<>
 			<h2>Orders</h2>
@@ -60,7 +59,7 @@ function OrderListScreen() {
 							<th>Total</th>
 							<th>Paid</th>
 							<th>Delivered</th>
-                            <th></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -85,7 +84,10 @@ function OrderListScreen() {
 								<td>
 									{order.isDelivered ? (
 										<div style={{ color: "green" }}>
-											{order.deliveredAt?.substring(0, 10)}
+											{order.deliveredAt?.substring(
+												0,
+												10
+											)}
 										</div>
 									) : (
 										<i
