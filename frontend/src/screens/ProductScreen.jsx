@@ -92,7 +92,7 @@ function ProductScreen() {
 				<Loader />
 			) : error ? (
 				<Message variant="danger">{error}</Message>
-			) : (
+			) : product ? (
 				<>
 					<Row>
 						<Col md={6}>
@@ -307,6 +307,8 @@ function ProductScreen() {
 						</Col>
 					</Row>
 				</>
+			) : (
+				""
 			)}
 		</div>
 	);

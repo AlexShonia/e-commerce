@@ -8,26 +8,36 @@ import { setProducts } from "../features/getProductsSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { LinkContainer } from "react-router-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Paginate from "../components/Paginate";
 function ProductListScreen() {
 	const dispatch = useDispatch();
-	const productsList = useSelector((state) => state.products.productsList);
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const pageParam = searchParams.get("page");
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const [idToDelete, setIdToDelete] = useState();
-	const { error, isLoading, refetch } = useQuery(
+	const {
+		data,
+		error,
+		isLoading,
+		refetch,
+	} = useQuery(
 		"proudctList",
 		async () => {
-			const response = await axiosClient.get("/api/products/", {
-				headers: {
-					"Content-type": "application/json",
-				},
-			});
+			const response = await axiosClient.get(
+				`/api/products?page=${pageParam}`,
+				{
+					headers: {
+						"Content-type": "application/json",
+					},
+				}
+			);
 			return response.data;
 		},
 		{
 			onSuccess: (data) => {
-				dispatch(setProducts(data));
+				dispatch(setProducts(data.products));
 			},
 			onError: (error) => {
 				// TODO: find out if get request is sent even if non auth user is redirected
@@ -69,7 +79,8 @@ function ProductListScreen() {
 		if (idToDelete) {
 			mutation.mutate();
 		}
-	}, [userInfo, idToDelete]);
+		refetch();
+	}, [userInfo, idToDelete, pageParam]);
 
 	function deleteHandler(id) {
 		if (window.confirm("Are you sure you want to delete this product?")) {
@@ -103,7 +114,6 @@ function ProductListScreen() {
 
 	function createProductHandler(product) {
 		createProductMutation.mutate();
-		console.log("create");
 	}
 
 	return (
@@ -135,50 +145,63 @@ function ProductListScreen() {
 			) : error ? (
 				<Message variant="danger">{error.response.data.detail}</Message>
 			) : (
-				<Table striped bordered responsive hover className="table-sm">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Name</th>
-							<th>Price</th>
-							<th>Category</th>
-							<th>Brand</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{productsList.map((product) => (
-							<tr key={product._id}>
-								<td>{product._id}</td>
-								<td>{product.name}</td>
-								<td>${product.price}</td>
-								<td>{product.category}</td>
-								<td>{product.brand}</td>
-								<td className="text-end">
-									<LinkContainer
-										to={`/admin/product/${product._id}/edit`}
-									>
-										<Button
-											variant="dark"
-											className="btn-sm"
-										>
-											<i className="fas fa-edit"></i>
-										</Button>
-									</LinkContainer>
-									<Button
-										variant="danger"
-										className="btn-sm mx-3"
-										onClick={() =>
-											deleteHandler(product._id)
-										}
-									>
-										<i className="fas fa-trash"></i>
-									</Button>
-								</td>
+				<>
+					<Table
+						striped
+						bordered
+						responsive
+						hover
+						className="table-sm"
+					>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Price</th>
+								<th>Category</th>
+								<th>Brand</th>
+								<th></th>
 							</tr>
-						))}
-					</tbody>
-				</Table>
+						</thead>
+						<tbody>
+							{data.products.map((product) => (
+								<tr key={product._id}>
+									<td>{product._id}</td>
+									<td>{product.name}</td>
+									<td>${product.price}</td>
+									<td>{product.category}</td>
+									<td>{product.brand}</td>
+									<td className="text-end">
+										<LinkContainer
+											to={`/admin/product/${product._id}/edit`}
+										>
+											<Button
+												variant="dark"
+												className="btn-sm"
+											>
+												<i className="fas fa-edit"></i>
+											</Button>
+										</LinkContainer>
+										<Button
+											variant="danger"
+											className="btn-sm mx-3"
+											onClick={() =>
+												deleteHandler(product._id)
+											}
+										>
+											<i className="fas fa-trash"></i>
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</Table>
+					<Paginate
+						pages={data.pages}
+						page={data.page}
+						isAdmin={true}
+					/>
+				</>
 			)}
 		</>
 	);

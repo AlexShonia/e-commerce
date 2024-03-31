@@ -8,29 +8,30 @@ import { useQuery } from "react-query";
 import { axiosClient } from "../axiosConfig";
 import { setProducts } from "../features/getProductsSlice";
 import { useSearchParams } from "react-router-dom";
+import Paginate from "../components/Paginate";
 function HomeScreen() {
-	const {
-		data: products,
-		isLoading,
-		error,
-		refetch,
-	} = useQuery("products", async () => {
-		const response = await axiosClient.get(
-			`/api/products?keyword=${keyword}`
-		);
-		return response.data;
-	});
-
 	const dispatch = useDispatch();
 	const [searchParams] = useSearchParams();
 	const keyword = searchParams.get("keyword");
+	const pageParam = searchParams.get("page");
+
+	const { data, isLoading, error, refetch } = useQuery(
+		"products",
+		async () => {
+			const response = await axiosClient.get(
+				`/api/products?keyword=${keyword}&page=${pageParam}`
+			);
+			return response.data;
+		}
+	);
 
 	useEffect(() => {
-		if (products) {
-			dispatch(setProducts(products));
+		//  TODO: understand why data.products was a problem (undefined)
+		if (data) {
+			dispatch(setProducts(data.products));
 		}
 		refetch();
-	}, [dispatch, products, keyword]);
+	}, [dispatch, data, keyword, pageParam]);
 
 	return (
 		<div>
@@ -40,14 +41,23 @@ function HomeScreen() {
 				<Loader />
 			) : error ? (
 				<Message variant="danger">{error}</Message>
+			) : data.products ? (
+				<>
+					<Row>
+						{data.products.map((product) => (
+							<Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+								<Product product={product} />
+							</Col>
+						))}
+					</Row>
+					<Paginate
+						pages={data.pages}
+						page={data.page}
+						keyword={keyword}
+					></Paginate>
+				</>
 			) : (
-				<Row>
-					{products.map((product) => (
-						<Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-							<Product product={product} />
-						</Col>
-					))}
-				</Row>
+				""
 			)}
 		</div>
 	);
