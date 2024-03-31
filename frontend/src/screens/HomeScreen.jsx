@@ -9,6 +9,7 @@ import { axiosClient } from "../axiosConfig";
 import { setProducts } from "../features/getProductsSlice";
 import { useSearchParams } from "react-router-dom";
 import Paginate from "../components/Paginate";
+import ProductCarousel from "../components/ProductCarousel";
 function HomeScreen() {
 	const dispatch = useDispatch();
 	const [searchParams] = useSearchParams();
@@ -35,12 +36,14 @@ function HomeScreen() {
 
 	return (
 		<div>
+			{!keyword && <ProductCarousel />}
+
 			<h1>Latest Products</h1>
 
 			{isLoading ? (
 				<Loader />
 			) : error ? (
-				<Message variant="danger">{error}</Message>
+				<Message variant="danger">{error.response.data.detail}</Message>
 			) : data.products ? (
 				<>
 					<Row>
