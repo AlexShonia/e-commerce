@@ -1,4 +1,4 @@
-React & Django E-commerce website with PayPal Integration, Redux, Django REST Framework
+React & Django E-commerce website with PayPal Integration, Redux, Django REST Framework, PostgreSQL DB on AWS
 
 Home page
 ![Screenshot 2024-03-24 at 17-52-21 ProShop](https://github.com/AlexShonia/e-commerce/assets/118980943/83f0045f-c217-48ad-a478-0e0430d445b9)
