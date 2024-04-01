@@ -99,6 +99,7 @@ function ProductScreen() {
 							<Image
 								src={
 									axiosClient.defaults.baseURL.slice(0, -1) +
+									"/static" +
 									product.image
 								}
 								alt={product?.name}

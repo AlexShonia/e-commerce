@@ -14,7 +14,12 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { axiosClient } from "../axiosConfig";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { useParams,useNavigate, useSearchParams, Link } from "react-router-dom";
+import {
+	useParams,
+	useNavigate,
+	useSearchParams,
+	Link,
+} from "react-router-dom";
 import { getOrderDetails } from "../features/orderSlice";
 
 function OrderScreen() {
@@ -204,6 +209,7 @@ function OrderScreen() {
 																			0,
 																			-1
 																		) +
+																		"/static" +
 																		item.image
 																	}
 																	alt={

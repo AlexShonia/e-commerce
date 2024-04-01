@@ -81,7 +81,7 @@ function CartScreen() {
 												axiosClient.defaults.baseURL.slice(
 													0,
 													-1
-												) + item.image
+												) + "/static" + item.image
 											}
 											alt={item.name}
 											fluid
