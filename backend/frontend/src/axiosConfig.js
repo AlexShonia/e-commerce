@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 export const axiosClient = axios.create({
-  baseURL: "",
+	baseURL: import.meta.env.VITE_BASE_URL,
 });

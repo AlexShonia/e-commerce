@@ -5,6 +5,7 @@ import Loader from "./Loader";
 import Message from "./Message";
 import { useQuery } from "react-query";
 import { axiosClient } from "../axiosConfig";
+import axios from "axios";
 
 function ProductCarousel() {
 	const { data, isLoading, error } = useQuery(
@@ -29,7 +30,7 @@ function ProductCarousel() {
 			{data.map((product) => (
 				<Carousel.Item key={product._id}>
 					<Link to={`/product/${product._id}`}>
-						<Image src={"/static" + product.image} alt={product.name} fluid />
+						<Image src={import.meta.env.VITE_IMG_PREFIX + product.image} alt={product.name} fluid />
 						<Carousel.Caption className="carousel.caption">
 							<h4>
 								{product.name} (${product.price})

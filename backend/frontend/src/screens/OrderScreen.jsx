@@ -205,11 +205,7 @@ function OrderScreen() {
 															<Col md={2}>
 																<Image
 																	src={
-																		axiosClient.defaults.baseURL.slice(
-																			0,
-																			-1
-																		) +
-																		"/static" +
+																		import.meta.env.VITE_IMG_PREFIX + 
 																		item.image
 																	}
 																	alt={
