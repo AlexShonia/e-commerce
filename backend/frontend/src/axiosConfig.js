@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const axiosClient = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "e-commerce-production-0fe3.up.railway.app/",
 });
