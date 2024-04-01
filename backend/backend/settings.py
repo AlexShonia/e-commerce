@@ -27,7 +27,7 @@ load_dotenv()
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "e-commerce-production-0fe3.up.railway.app"]
 
@@ -178,5 +178,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-if os.getcwd() == "/app":
-    DEBUG = False
+# if os.getcwd() == "/app":
+#     DEBUG = False
