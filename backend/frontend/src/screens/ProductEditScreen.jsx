@@ -46,6 +46,7 @@ function ProductEditScreen() {
 			onError: (error) => {
 				console.log("Error getting user: ", error);
 			},
+			refetchOnWindowFocus: false,
 		}
 	);
 
@@ -72,7 +73,6 @@ function ProductEditScreen() {
 		},
 		{
 			onSuccess: (data) => {
-				console.log(data);
 				navigate("/admin/productlist");
 			},
 			onError: (error) => {
@@ -86,10 +86,8 @@ function ProductEditScreen() {
 		mutation.mutate();
 	}
 	async function uploadFileHandler(e) {
-		console.log(e);
 		const file = e.target.files[0];
 		const formData = new FormData();
-		console.log(axiosClient.defaults.baseURL);
 
 		formData.append("image", file);
 		formData.append("product_id", id);
@@ -107,10 +105,10 @@ function ProductEditScreen() {
 				formData,
 				config
 			);
-			setImage(data)
+			setImage(data);
 			setUploading(false);
-
 		} catch (error) {
+			console.log("error uploading file: ", error);
 			setUploading(false);
 		}
 	}
@@ -170,12 +168,6 @@ function ProductEditScreen() {
 								onChange={uploadFileHandler}
 							/>
 							{uploading && <Loader />}
-							{/* <Form.File
-								id="image-file"
-								label="Choose File"
-								custom
-								onChange={uploadFileHandler}
-							></Form.File> */}
 						</Form.Group>
 						<Form.Group controlId="brand">
 							<Form.Label>Brand</Form.Label>
@@ -209,6 +201,7 @@ function ProductEditScreen() {
 						<Form.Group controlId="description">
 							<Form.Label>Description</Form.Label>
 							<Form.Control
+								as="textarea"
 								type="text"
 								placeholder="Enter Description"
 								value={description}

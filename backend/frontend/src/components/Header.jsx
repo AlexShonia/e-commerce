@@ -28,7 +28,7 @@ function Header() {
 			>
 				<Container>
 					<LinkContainer to="/">
-						<Navbar.Brand>ProShop</Navbar.Brand>
+						<Navbar.Brand>SportShop</Navbar.Brand>
 					</LinkContainer>
 
 					<Navbar.Toggle aria-controls="basic-navbar-nav" />

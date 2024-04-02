@@ -61,7 +61,6 @@ function ProductListScreen() {
 		},
 		{
 			onSuccess: (data) => {
-				console.log("User deleted succesfully", data);
 				setIdToDelete(null);
 				refetch();
 			},
