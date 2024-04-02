@@ -4,7 +4,7 @@ import { Button, Table, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import { axiosClient } from "../axiosConfig";
-import { setProducts } from "../features/getProductsSlice";
+import { setProductsData } from "../features/productsSlice";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { LinkContainer } from "react-router-bootstrap";
@@ -17,12 +17,7 @@ function ProductListScreen() {
 	const pageParam = searchParams.get("page");
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const [idToDelete, setIdToDelete] = useState();
-	const {
-		data,
-		error,
-		isLoading,
-		refetch,
-	} = useQuery(
+	const { data, error, isLoading, refetch } = useQuery(
 		"proudctList",
 		async () => {
 			const response = await axiosClient.get(
@@ -37,7 +32,7 @@ function ProductListScreen() {
 		},
 		{
 			onSuccess: (data) => {
-				dispatch(setProducts(data.products));
+				dispatch(setProductsData(data.products));
 			},
 			onError: (error) => {
 				// TODO: find out if get request is sent even if non auth user is redirected

@@ -6,7 +6,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useQuery } from "react-query";
 import { axiosClient } from "../axiosConfig";
-import { setProducts } from "../features/getProductsSlice";
+import { setProductsData } from "../features/productsSlice";
 import { useSearchParams } from "react-router-dom";
 import Paginate from "../components/Paginate";
 import ProductCarousel from "../components/ProductCarousel";
@@ -15,24 +15,34 @@ function HomeScreen() {
 	const [searchParams] = useSearchParams();
 	const keyword = searchParams.get("keyword");
 	const pageParam = searchParams.get("page");
+	const productsData = useSelector((state) => state.products);
+	const { page, pages, productsList } = productsData;
 
-	const { data, isLoading, error, refetch } = useQuery(
+	const { isLoading, error, refetch } = useQuery(
 		"products",
 		async () => {
 			const response = await axiosClient.get(
 				`/api/products?keyword=${keyword}&page=${pageParam}`
 			);
 			return response.data;
+		},
+		{
+			onSuccess: (data) => {
+				dispatch(setProductsData(data));
+			},
+			onError: (error) => {
+				console.log(
+					"error fetching products: ",
+					error.response.data.detail
+				);
+			},
 		}
 	);
 
 	useEffect(() => {
 		//  TODO: understand why data.products was a problem (undefined)
-		if (data) {
-			dispatch(setProducts(data.products));
-		}
 		refetch();
-	}, [dispatch, data, keyword, pageParam]);
+	}, [keyword, pageParam]);
 
 	return (
 		<div>
@@ -44,23 +54,21 @@ function HomeScreen() {
 				<Loader />
 			) : error ? (
 				<Message variant="danger">{error.response.data.detail}</Message>
-			) : data.products ? (
+			) : (
 				<>
 					<Row>
-						{data.products.map((product) => (
+						{productsList.map((product) => (
 							<Col key={product._id} sm={12} md={6} lg={4} xl={3}>
 								<Product product={product} />
 							</Col>
 						))}
 					</Row>
 					<Paginate
-						pages={data.pages}
-						page={data.page}
+						pages={pages}
+						page={page}
 						keyword={keyword}
 					></Paginate>
 				</>
-			) : (
-				""
 			)}
 		</div>
 	);
