@@ -5,7 +5,7 @@ const initialState = { productsList: [], page: 1, pages: 0 };
 export const productsSlice = createSlice({
 	name: "products",
 	initialState,
-	reducers: {
+	reducers: { 
 		setProductsData: (state, action) => {
 			state.productsList = action.payload.products;
 			state.page = action.payload.page;
