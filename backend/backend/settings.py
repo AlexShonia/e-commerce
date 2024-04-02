@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "e-commerce-production-0fe3.up.railway.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "e-commerce-sportshop.up.railway.app"]
 
 
 # Application definition
