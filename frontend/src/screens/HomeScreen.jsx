@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Alert } from "react-bootstrap";
 import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
@@ -46,6 +46,9 @@ function HomeScreen() {
 
 	return (
 		<div>
+			<Alert variant="info" className="text-center">
+				This is a Portfolio website
+			</Alert>
 			{!keyword && <ProductCarousel />}
 
 			<h1>All Products</h1>
@@ -54,7 +57,7 @@ function HomeScreen() {
 				<Loader />
 			) : error ? (
 				<Message variant="danger">{error.response.data.detail}</Message>
-			) : (
+			) : productsList ? (
 				<>
 					<Row>
 						{productsList.map((product) => (
@@ -69,6 +72,8 @@ function HomeScreen() {
 						keyword={keyword}
 					></Paginate>
 				</>
+			) : (
+				""
 			)}
 		</div>
 	);
