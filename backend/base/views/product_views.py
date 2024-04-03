@@ -19,9 +19,9 @@ def getProducts(request):
 
 
     if(query):
-        products = Product.objects.filter(name__icontains=query)
+        products = Product.objects.filter(name__icontains=query).order_by("_id")
     else:
-        products = Product.objects.all()
+        products = Product.objects.all().order_by("_id")
 
     page = request.query_params.get("page")
     paginator = Paginator(products, 4)
