@@ -23,7 +23,6 @@ def getProducts(request):
     else:
         products = Product.objects.all().order_by("_id")
 
-    print(products)
     page = request.query_params.get("page")
     paginator = Paginator(products, 4)
     try:
