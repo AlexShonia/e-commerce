@@ -29,7 +29,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "e-commerce-sportshop.up.railway.app", "https://e-commerce-sportshop.up.railway.app"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "e-commerce-sportshop.up.railway.app",
+    "https://e-commerce-sportshop.up.railway.app",
+    "e-commerce-sportshop-backend.up.railway.app",
+]
 
 
 # Application definition
@@ -132,10 +138,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("PGDATABASE"),
-        "USER" : os.environ.get("PGUSER"),
-        "PASSWORD" : os.environ.get("PGPASSWORD"),
-        "HOST" : os.environ.get("PGHOST"),
-        "PORT" : os.environ.get("PGPORT"),
+        "USER": os.environ.get("PGUSER"),
+        "PASSWORD": os.environ.get("PGPASSWORD"),
+        "HOST": os.environ.get("PGHOST"),
+        "PORT": os.environ.get("PGPORT"),
     }
 }
 # Password validation
