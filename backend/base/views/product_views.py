@@ -17,8 +17,7 @@ def getProducts(request):
     if query == "null" or query == None:
         query = ""
 
-
-    if(query):
+    if query:
         products = Product.objects.filter(name__icontains=query).order_by("_id")
     else:
         products = Product.objects.all().order_by("_id")
