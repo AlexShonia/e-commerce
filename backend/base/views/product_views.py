@@ -16,7 +16,7 @@ def getProducts(request):
     query = request.query_params.get("keyword")
     if query == "null" or query == None:
         query = ""
-
+    
     if query:
         products = Product.objects.filter(name__icontains=query).order_by("_id")
     else:
@@ -98,10 +98,8 @@ def deleteProduct(request, pk):
 @api_view(["POST"])
 def uploadImage(request):
     data = request.data
-
     product_id = data["product_id"]
     product = Product.objects.get(_id=product_id)
-
     product.image = request.FILES.get("image")
     product.save()
     return Response("Image was uploaded")

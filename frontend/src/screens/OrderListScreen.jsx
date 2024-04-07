@@ -29,7 +29,6 @@ function OrderListScreen() {
 				setOrderList(data);
 			},
 			onError: (error) => {
-				// TODO: find out if get request is sent even if non auth user is redirected
 				console.log("error getting orders: ", error);
 			},
 		}

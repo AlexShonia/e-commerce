@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { axiosClient } from "../axiosConfig";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import DeleteProductBtn from "../components/DeleteProductBtn";
 
 function ProductEditScreen() {
 	const [name, setName] = useState("");
@@ -123,6 +124,7 @@ function ProductEditScreen() {
 			<Link to="/admin/productlist">Go Back</Link>
 			<FormContainer>
 				<h1>Edit Product</h1>
+
 				{mutation.isLoading && <Loader />}
 				{mutation.error && (
 					<Message variant="danger">
@@ -208,9 +210,22 @@ function ProductEditScreen() {
 								onChange={(e) => setDescription(e.target.value)}
 							></Form.Control>
 						</Form.Group>
-						<Button type="submit" className="my-3">
-							Update
-						</Button>
+						<Form.Group>
+							<Row>
+								<Col>
+									<Button type="submit" className="my-3">
+										Update
+									</Button>
+								</Col>
+								<Col className="d-flex justify-content-end align-items-center">
+									<DeleteProductBtn
+										id={id}
+										refetch={null}
+										navigatePath="/admin/productlist"
+									/>
+								</Col>
+							</Row>
+						</Form.Group>
 					</Form>
 				)}
 			</FormContainer>

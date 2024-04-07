@@ -26,7 +26,7 @@ function SearchBox() {
 			></Form.Control>
 			<Button
 				type="submit"
-				variant="outline-success"
+				variant="outline-info"
 				className="p-2 px-4 mx-3"
 			>
 				Submit

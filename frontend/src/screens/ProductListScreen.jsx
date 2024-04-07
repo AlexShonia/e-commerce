@@ -10,6 +10,7 @@ import Message from "../components/Message";
 import { LinkContainer } from "react-router-bootstrap";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Paginate from "../components/Paginate";
+import DeleteProductBtn from "../components/DeleteProductBtn";
 function ProductListScreen() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -17,6 +18,7 @@ function ProductListScreen() {
 	const pageParam = searchParams.get("page");
 	const userInfo = useSelector((state) => state.userLogin.userInfo);
 	const [idToDelete, setIdToDelete] = useState();
+
 	const { data, error, isLoading, refetch } = useQuery(
 		"proudctList",
 		async () => {
@@ -35,52 +37,11 @@ function ProductListScreen() {
 				dispatch(setProductsData(data.products));
 			},
 			onError: (error) => {
-				// TODO: find out if get request is sent even if non auth user is redirected
 				console.log("error getting products: ", error);
 			},
 		}
 	);
 
-	const mutation = useMutation(
-		async () => {
-			const response = await axiosClient.delete(
-				`/api/products/delete/${idToDelete}/`,
-				{
-					headers: {
-						"Content-type": "application/json",
-						Authorization: `Bearer ${userInfo.token}`,
-					},
-				}
-			);
-			return response.data;
-		},
-		{
-			onSuccess: (data) => {
-				setIdToDelete(null);
-				refetch();
-			},
-			onError: (error) => {
-				console.log("user deletion error", error);
-			},
-		}
-	);
-	const { error: deleteError } = mutation;
-
-	useEffect(() => {
-		if (!userInfo || !userInfo.isAdmin) {
-			navigate("/login");
-		}
-		if (idToDelete) {
-			mutation.mutate();
-		}
-		refetch();
-	}, [userInfo, idToDelete, pageParam]);
-
-	function deleteHandler(id) {
-		if (window.confirm("Are you sure you want to delete this product?")) {
-			setIdToDelete(id);
-		}
-	}
 	const createProductMutation = useMutation(
 		async () => {
 			const response = await axiosClient.post(
@@ -110,6 +71,13 @@ function ProductListScreen() {
 		createProductMutation.mutate();
 	}
 
+	useEffect(() => {
+		if (!userInfo || !userInfo.isAdmin) {
+			navigate("/login");
+		}
+		refetch();
+	}, [userInfo, pageParam]);
+
 	return (
 		<>
 			<Row className="align-items-center">
@@ -122,12 +90,12 @@ function ProductListScreen() {
 					</Button>
 				</Col>
 			</Row>
-			{mutation.isLoading && <Loader />}
-			{mutation.error && (
+			{/* {deleteBtnLoading && <Loader />}
+			{deleteBtnError && (
 				<Message variant="danger">
-					{mutation.error.response.data.detail}
+					{deleteBtnError.response.data.detail}
 				</Message>
-			)}
+			)} */}
 			{createProductMutation.isLoading && <Loader />}
 			{createProductMutation.error && (
 				<Message variant="danger">
@@ -176,15 +144,11 @@ function ProductListScreen() {
 												<i className="fas fa-edit"></i>
 											</Button>
 										</LinkContainer>
-										<Button
-											variant="danger"
-											className="btn-sm mx-3"
-											onClick={() =>
-												deleteHandler(product._id)
-											}
-										>
-											<i className="fas fa-trash"></i>
-										</Button>
+										<DeleteProductBtn
+											// TODO: somehow extract is loading/error data from here
+											id={product._id}
+											refetch={refetch}
+										/>
 									</td>
 								</tr>
 							))}

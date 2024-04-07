@@ -22,7 +22,7 @@ function Header() {
 		<header>
 			<Navbar
 				expand="lg"
-				className="bg-body-tertiary"
+				bg="dark"
 				data-bs-theme="dark"
 				collapseOnSelect
 			>
@@ -43,7 +43,7 @@ function Header() {
 								</Nav.Link>
 							</LinkContainer>
 							{userInfo ? (
-								<NavDropdown title={userInfo.name}>
+								<NavDropdown title={userInfo.name} data-bs-theme="light">
 									<LinkContainer to="/profile">
 										<NavDropdown.Item>
 											Profile
@@ -68,7 +68,7 @@ function Header() {
 								</>
 							)}
 							{userInfo && userInfo.isAdmin && (
-								<NavDropdown title="Admin" id="adminmenu">
+								<NavDropdown title="Admin" id="adminmenu" data-bs-theme="light">
 									<LinkContainer to="/admin/userlist">
 										<NavDropdown.Item>
 											Users
