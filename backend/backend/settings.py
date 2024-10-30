@@ -34,7 +34,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "e-commerce-sportshop.up.railway.app",
     "https://e-commerce-sportshop.up.railway.app",
-    "e-commerce-sportshop-backend.up.railway.app",
+    "https://e-commerce-sportshop-backend.up.railway.app",
 ]
 
 
